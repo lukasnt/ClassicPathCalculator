@@ -1,0 +1,31 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <Frame name="PinMixinTemplate" inherits="BaseMapPoiPinTemplate" mixin="PinMixin" virtual="true" />
+
+    <Button name="CalculateButton" parent="WorldMapFrame" inherits="UIPanelButtonTemplate" text="Calculate Path">
+        <Size>
+            <AbsDimension x="120" y="22"/>
+        </Size>
+        <Anchors>
+            <Anchor point="LEFT" relativePoint="RIGHT" relativeTo="WorldMapZoomOutButton">
+                <Offset>
+                    <AbsDimension x="7" y="0"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+    </Button>
+    <!--
+    <Frame name="MenuFrame" inherits="BasicFrameTemplate" parent="WorldMapFrame" frameStrata="HIGHLIGHT" frameLevel="10">
+        <Size>
+            <AbsDimension x="200" y="200"/>
+        </Size>
+        <Anchors>
+            <Anchor point="TOP" relativePoint="BOTTOM" relativeTo="WorldMapZoomOutButton" layer="HIGHLIGHT">
+                <Offset>
+                    <AbsDimension x="0" y="20"/>
+                </Offset>
+            </Anchor>
+        </Anchors>
+    </Frame>
+    -->
+</Ui>

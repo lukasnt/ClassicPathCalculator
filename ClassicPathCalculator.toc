@@ -1,0 +1,8 @@
+## Interface: 11304
+## Title: ClassicPathCalculator
+## Notes: Finds paths from players position to points on the map.
+## Author: Luke
+## Version: 0.0.1
+ClassicPathCalculator.xml
+MapData.lua
+ClassicPathCalculator.lua

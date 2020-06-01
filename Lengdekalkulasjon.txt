@@ -1,0 +1,14 @@
+100% movementspeed 8 yards / second
+
+Kalimdor
+Fra toppen av moonglade til uldum: 25000 yards (kanskje 20000 i luftlinje)
+toppen av moonglade koordinat: (55.0, 16.0)
+uldum koordinat: (54.0, 91.0)
+25000 / (91 - 16) = 333.33 yards/y-pixel
+
+
+Eastern Kingdoms
+Toppen av eastern kingdoms til booty bay: 30000 yards (kanskje 25000 i luftlinje)
+Toppen av eastern kingdoms: (55.0, 17.0)
+Booty bay: (43.0, 93.0)
+30000 / (93 - 17) = 395 yards/y-pixel 
