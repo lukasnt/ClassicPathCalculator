@@ -187,17 +187,20 @@ end
 
 function addZLPData(ZLPData, locData, mapData)
     for fromID,toList in pairs(ZLPData) do
-        for toID,v in pairs(table_name) do
+        for toID,v in pairs(toList) do
             local locName = C_Map.GetMapInfo(fromID).name .. "-" .. C_Map.GetMapInfo(toID).name
             
             local pos = CreateVector2D(v["x"], v["y"])
             local fromPosX, fromPosY = pos:GetXY()
-            local toPosX, toPosY = getMapPosFromWorldPosForMap(toID, pos, fromID)
-            local gPosX, gPosY = getMapPosFromWorldPosForMap(947, pos, fromID)
+            local toPosX, toPosY = getMapPosFromWorldPosForMap(toID, fromID, pos)
+            local gPosX, gPosY = getMapPosFromWorldPosForMap(947, fromID, pos)
             
-            locData[locName] = {["type"] = v["type"], ["faction"] = v["faction"], ["x"] = gPosX,    ["y"] = gPosY,  ["desc"] = locName}
-            mapData[fromID]  = {["type"] = v["type"], ["faction"] = v["faction"], ["x"] = fromPosX, ["y"] = fromPosY, ["desc"] = locName}
-            mapData[toID]    = {["type"] = v["type"], ["faction"] = v["faction"], ["x"] = toPosX,   ["y"] = toPosY, ["desc"] = locName}
+
+            if mapData[fromID] == nil then mapData[fromID] = {} end
+            if mapData[toID] == nil then mapData[toID] = {} end
+            locData[locName] =            {["type"] = v["type"], ["faction"] = v["faction"], ["x"] = gPosX, ["y"]    = gPosY,  ["desc"]   = locName}
+            table.insert(mapData[fromID], {["type"] = v["type"], ["faction"] = v["faction"], ["x"] = fromPosX, ["y"] = fromPosY, ["desc"] = locName})
+            table.insert(mapData[toID],   {["type"] = v["type"], ["faction"] = v["faction"], ["x"] = toPosX, ["y"]   = toPosY, ["desc"]   = locName})
         end
     end
 end
@@ -223,16 +226,17 @@ function initDistData(mapData, lengths)
             for _,loc1 in pairs(locList) do
                 local x1, y1 = getMapPosFromWorldPosForMap(continentID, mapID, CreateVector2D(loc1["x"], loc1["y"]))
                 local name1 = getNameBeforeComma(loc1["desc"])
-
+                
                 for _,loc2 in pairs(locList) do
-                    if loc ~= loc2 then
+                    if loc1 ~= loc2 then
                         local x2, y2 = getMapPosFromWorldPosForMap(continentID, mapID, CreateVector2D(loc2["x"], loc2["y"]))
                         local name2 = getNameBeforeComma(loc2["desc"])
 
-                        local dxTime = math.abs(x2 - x1) * getYardsPerPixelForMap(mapID) / NORMAL_PLAYER_SPEED
-                        local dyTime = math.abs(y2 - y1) * getYardsPerPixelForMap(mapID) / NORMAL_PLAYER_SPEED
+                        local dxTime = math.abs(x2 - x1) * getYardsPerPixelForMap(continentID) / NORMAL_PLAYER_SPEED
+                        local dyTime = math.abs(y2 - y1) * getYardsPerPixelForMap(continentID) / NORMAL_PLAYER_SPEED
                         local timeDistance = math.sqrt(math.pow(dxTime, 2) + math.pow(dyTime, 2))
 
+                        if lengths[name1] == nil then lengths[name1] = {} end
                         lengths[name1][name2] = timeDistance
                     end
                 end
@@ -257,14 +261,16 @@ function getData2(faction)
     end
     if mapData == nil then mapData = {} end
     locData = getPreciseMapData(947, mapData)
-    addZLPData(ZLPData, locData, mapData)
+    addZLPData(ZoneLinkPoints, locData, mapData)
     initDistData(mapData, lengths)
+    
     
     data.locData = locData
     data.mapData = mapData
     data.ZLPData = ZoneLinkPoints
     data.lengths = lengths
-
+    print("getData2")
+    
     return data
 end
 
@@ -292,6 +298,7 @@ function setDistData(posName, mapID, mapPos, data)
     
     local continentID = getContinentMapIDFromMapPos(mapID, mapPos)
     local posX, posY = getMapPosFromWorldPosForMap(continentID, mapID, mapPos)
+    
     local info = C_Map.GetMapInfoAtPosition(continentID, posX, posY)
     if info == nil then return end
 
@@ -311,7 +318,7 @@ function setDistData(posName, mapID, mapPos, data)
     posX, posY = getMapPosFromWorldPosForMap(947, mapID, mapPos)
     data.locData[posName] = {["type"] = "C", ["faction"] = "N", ["mapID"] = info.mapID, ["x"] = posX, ["y"] = posY, ["desc"] = posName}
     posX, posY = getMapPosFromWorldPosForMap(info.mapID, mapID, mapPos)
-    --data.mapData[info.mapID] = {["type"] = "C", ["faction"] = "N", ["mapID"] = info.mapID, ["x"] = posX, ["y"] = posY, ["desc"] = posName}
+    table.insert(data.mapData[info.mapID], {["type"] = "C", ["faction"] = "N", ["mapID"] = info.mapID, ["x"] = posX, ["y"] = posY, ["desc"] = posName})
 end
 
 
@@ -558,19 +565,22 @@ local playerX, playerY = position:GetXY()
 playerX = playerX * 100
 playerY = playerY * 100
 
-targetX = 49
-targetY = 66
+targetX = 47
+targetY = 78
 targetMapID = 1415
 
 lengths, mapData = getData(englishFaction, 1414)
 lengths2, mapData2 = getData(englishFaction, 1415)
-getData2(englishFaction)
+local data = getData2(englishFaction)
+setDistData("player", mapID, position, data)
+setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
 --setDistanceDataForPosition(playerX, playerY, "player", lengths, mapData2, mapID, true)
 --setDistanceDataForPosition(targetX, targetY, "target", lengths2, mapData2, targetMapID, true)
-initBoatZepplinDistanceData(englishFaction, 1414)
-initBoatZepplinDistanceData(englishFaction, 1415)
+--initBoatZepplinDistanceData(englishFaction, 1414)
+--initBoatZepplinDistanceData(englishFaction, 1415)
 
-dist, prev = dijkstrasSSSP(lengths, "player")
+
+dist, prev = dijkstrasSSSP(data.lengths, "player")
 printPath(prev, "target")
 
 
@@ -867,3 +877,57 @@ for k,v in pairs(info) do
 end
 print("done")
 --]]
+
+--[[
+testTable = {
+    ["hello"] = 12,
+    ["123"] = 14,
+    ["abc"] = 15,
+}
+print("print:")
+for k,v in pairs(testTable) do
+    print(k,v)
+end
+print("print:")
+testTable["hello"] = nil 
+for k,v in pairs(testTable) do
+    print(k,v)
+end
+print("print:")
+testTable["abc"] = nil
+for k,v in pairs(testTable) do
+    print(k,v)
+end
+print("print:")
+testTable["123"] = nil 
+for k,v in pairs(testTable) do
+    print(k,v)
+end
+--]]
+
+--[[
+testArray = {
+    {["type"] = "FM", ["faction"] = "A", ["x"] = 17.4, ["y"] = 19.6, ["desc"] = "Rut'theran Village, Teldrassil"},
+    {["type"] = "BN", ["faction"] = "A", ["x"] = 18.3, ["y"] = 21.2, ["desc"] = "Darnassus Boat"},
+}
+for k,v in pairs(testArray) do
+    print(k, v["type"], v["faction"], v["x"], v["y"], v["desc"])
+end
+print(testArray[1])
+print(testArray[2])
+testArray[1] = nil
+for k,v in pairs(testArray) do
+    print(k, v["type"], v["faction"], v["x"], v["y"], v["desc"])
+end
+testArray[2] = nil
+table.insert(testArray, {["type"] = "BN", ["faction"] = "A", ["x"] = 18.3, ["y"] = 21.2, ["desc"] = "Darnassus Boat"})
+for k,v in pairs(testArray) do
+    print(k, v["type"], v["faction"], v["x"], v["y"], v["desc"])
+end
+--]]
+
+emptyList = {}
+table.insert(emptyList, 123)
+for k,v in pairs(emptyList) do
+    print(k,v)
+end
