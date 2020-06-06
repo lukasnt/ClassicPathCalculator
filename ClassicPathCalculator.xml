@@ -2,7 +2,8 @@
 
     <Frame name="PinMixinTemplate" inherits="BaseMapPoiPinTemplate" mixin="PinMixin" virtual="true" />
 
-    <Button name="CalculateButton" parent="WorldMapFrame" inherits="UIPanelButtonTemplate" text="Calculate Path">
+    <!--
+    <Button name="CalculateButton" parent="WorldMapFrame" inherits="UIPanelButtonTemplate" text="ClassicPathCalculator">
         <Size>
             <AbsDimension x="120" y="22"/>
         </Size>
@@ -14,6 +15,7 @@
             </Anchor>
         </Anchors>
     </Button>
+    -->
     <!--
     <Frame name="MenuFrame" inherits="BasicFrameTemplate" parent="WorldMapFrame" frameStrata="HIGHLIGHT" frameLevel="10">
         <Size>

@@ -35,12 +35,12 @@ ClassicTravelPoints.MapDataAlliance = {
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 75.5, ["y"] = 45.7, ["desc"] = "Menethil Harbor, Wetlands"},
 		{["type"] = "BN", ["faction"] = "A", ["x"] = 74.2, ["y"] = 46, ["desc"] = "Menethil Harbor Boats"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 75.8, ["y"] = 51, ["desc"] = "Ironforge, Dun Morogh"},
-		{["type"] = "BN", ["faction"] = "A", ["x"] = 75.9, ["y"] = 48.6, ["desc"] = "Deeprun Tram, Stormwind"},
+		{["type"] = "BN", ["faction"] = "A", ["x"] = 75.9, ["y"] = 48.6, ["desc"] = "Deeprun Tram Ironforge"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 79.6, ["y"] = 50.8, ["desc"] = "Thelsamar, Loch Modan"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 76.1, ["y"] = 54.8, ["desc"] = "Thorium Point, Searing Gorge"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 79.4, ["y"] = 61.8, ["desc"] = "Morgan's Vigil, Burning Steppes"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 73.3, ["y"] = 64.5, ["desc"] = "Stormwind, Elwynn Forest"},
-		{["type"] = "BN", ["faction"] = "A", ["x"] = 72.9, ["y"] = 62.1, ["desc"] = "Deeprun Tram, Stormwind"},
+		{["type"] = "BN", ["faction"] = "A", ["x"] = 72.9, ["y"] = 62.1, ["desc"] = "Deeprun Tram Stormwind"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 78.3, ["y"] = 65.5, ["desc"] = "Lakeshire, Redridge Mountains"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 70.4, ["y"] = 68.7, ["desc"] = "Sentinel Hill, Westfall"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 75.9, ["y"] = 68.6, ["desc"] = "Darkshire, Duskwood"},
@@ -85,12 +85,12 @@ ClassicTravelPoints.MapDataAlliance = {
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 47.5, ["y"] = 45.3, ["desc"] = "Menethil Harbor, Wetlands"},
 		{["type"] = "BN", ["faction"] = "A", ["x"] = 46.5, ["y"] = 47.9, ["desc"] = "Menethil Harbor Boats"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 49, ["y"] = 54.1, ["desc"] = "Ironforge, Dun Morogh"},
-		{["type"] = "BN", ["faction"] = "A", ["x"] = 48.7, ["y"] = 51.2, ["desc"] = "Deeprun Tram, Ironforge"},
+		{["type"] = "BN", ["faction"] = "A", ["x"] = 48.7, ["y"] = 51.2, ["desc"] = "Deeprun Tram Ironforge"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 52.7, ["y"] = 54.7, ["desc"] = "Thelsamar, Loch Modan"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 48.5, ["y"] = 59.8, ["desc"] = "Thorium Point, Searing Gorge"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 52.7, ["y"] = 67.3, ["desc"] = "Morgan's Vigil, Burning Steppes"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 45.6, ["y"] = 71.4, ["desc"] = "Stormwind, Elwynn Forest"},
-		{["type"] = "BN", ["faction"] = "A", ["x"] = 45.1, ["y"] = 68.8, ["desc"] = "Deeprun Tram, Stormwind"},
+		{["type"] = "BN", ["faction"] = "A", ["x"] = 45.1, ["y"] = 68.8, ["desc"] = "Deeprun Tram Stormwind"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 52.6, ["y"] = 72.2, ["desc"] = "Lakeshire, Redridge Mountains"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 42.8, ["y"] = 78.2, ["desc"] = "Sentinel Hill, Westfall"},
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 49.9, ["y"] = 76.7, ["desc"] = "Darkshire, Duskwood"},
@@ -166,7 +166,7 @@ ClassicTravelPoints.MapDataAlliance = {
 	-- Ironforge
 	[1455] = {
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 55.5, ["y"] = 47.8, ["desc"] = "Ironforge"},
-		{["type"] = "BN", ["faction"] = "A", ["x"] = 84.14, ["y"] = 52.86, ["desc"] = "Deeprun Tram, Ironforge"},
+		{["type"] = "BN", ["faction"] = "A", ["x"] = 84.14, ["y"] = 52.86, ["desc"] = "Deeprun Tram Ironforge"},
 	},
 	-- Loch Modan
 	[1432] = {
@@ -196,7 +196,7 @@ ClassicTravelPoints.MapDataAlliance = {
 	-- Stormwind City
 	[1453] = {
 		{["type"] = "FM", ["faction"] = "A", ["x"] = 66.3, ["y"] = 62.1, ["desc"] = "Stormwind"},
-		{["type"] = "BN", ["faction"] = "A", ["x"] = 67.6, ["y"] = 5, ["desc"] = "Deeprun Tram, Stormwind"},
+		{["type"] = "BN", ["faction"] = "A", ["x"] = 67.6, ["y"] = 5, ["desc"] = "Deeprun Tram Stormwind"},
 	},
 	-- Stranglethorn Vale
 	[1434] = {
@@ -527,40 +527,162 @@ ModeIconsFilepath = {
 
 
 ZoneLinkPoints = {
-	-- Arathi Highlands
-	[1417] = {
+	-- Elwynn Forest
+	[1429] = {
+
+	},
+	-- Redridge Mountains
+	[1433] = {
+		[1429] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 2.3, ["y"] = 71.7, ["desc"] = ""},
+		[1428] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 46.9, ["y"] = 13.8, ["desc"] = ""},
+	},
+	-- Westfall
+	[1436] = {
+		[1434] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 36.6, ["y"] = 89.8, ["desc"] = ""},
+		[1429] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 62.0, ["y"] = 17.5, ["desc"] = ""},
+	},
+	-- Duskwood
+	[1431] = {
+		[1434] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 44.7, ["y"] = 84.8, ["desc"] = ""},
+		[1436] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 7.8, ["y"] = 63.9, ["desc"] = ""},
+		[1429] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 50, ["y"] = 11, ["desc"] = ""},
+		[1433] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 94.1, ["y"] = 9.9, ["desc"] = ""},
+	},
+	-- Stranglethorn Vale
+	[1434] = {
 		
 	},
-	-- Ashenvale
-	[1440] = {
-		
+	-- Swamp of Sorrows
+	[1435] = {
+		[1419] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 33.2, ["y"] = 69.6, ["desc"] = ""},
 	},
-	-- Azshara
-	[1447] = {
+	-- Deadwind Pass
+	[1430] = {
+		[1435] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 57.9, ["y"] = 42.0, ["desc"] = ""},
+		[1431] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 31.0, ["y"] = 34.8, ["desc"] = ""},
+	},
+	-- Blasted Lands
+	[1419] = {
 		
 	},
 	-- Badlands
 	[1418] = {
-		
+		[1427] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 1.7, ["y"] = 60.8, ["desc"] = ""},
 	},
 	-- Burning Steppes
 	[1428] = {
 		
 	},
+	-- Searing Gorge
+	[1427] = {
+		[1428] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 25.0, ["y"] = 99.0, ["desc"] = ""},
+	},
+	-- Loch Modan
+	[1432] = {
+		[1427] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 47.0, ["y"] = 82.8, ["desc"] = ""},
+		[1437] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 47.7, ["y"] = 5.7, ["desc"] = ""},
+	},
+	-- Dun Morogh
+	[1426] = {
+		[1432] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 86.5, ["y"] = 29.8, ["desc"] = ""},
+	},
+	-- Wetlands
+	[1437] = {
+		[1417] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 51.5, ["y"] = 8.4, ["desc"] = ""},
+	},
+	-- Arathi Highlands
+	[1417] = {
+		
+	},
+	-- Hillsbrad Foothills
+	[1424] = {
+		[1417] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 81.8, ["y"] = 56.5, ["desc"] = ""},
+		[1425] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 91.2, ["y"] = 21.9, ["desc"] = ""},
+	},
+	-- Alterac Mountains
+	[1416] = {
+		[1424] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 53.5, ["y"] = 76.5, ["desc"] = ""},
+	},
+	-- Tirisfal Glades
+	[1420] = {
+		[1422] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 85.0, ["y"] = 70.0, ["desc"] = ""},
+	},
+	-- Silverpine Forest
+	[1421] = {
+		[1420] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 68.7, ["y"] = 3.8, ["desc"] = ""},
+		[1424] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 68.6, ["y"] = 80.8, ["desc"] = ""},
+	},
+	-- Western Plaguelands
+	[1422] = {
+		[1423] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 71.6, ["y"] = 50.4, ["desc"] = ""},
+	},
+	-- Eastern Plaguelands
+	[1423] = {
+		
+	},
+	-- The Hinterlands
+	[1425] = {
+		
+	},
+	-- Tanaris
+	[1446] = {
+		[1449] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 26.6, ["y"] = 52.3, ["desc"] = ""},
+	},
+	-- Un'Goro Crater
+	[1449] = {
+
+	},
+	
+	-- The Undercity
+	[1458] = {
+
+	},
+	-- Thousand Needles
+	[1441] = {
+		[1446] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 76.1, ["y"] = 96.4, ["desc"] = ""},
+		[1413] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 32.0, ["y"] = 21.6, ["desc"] = ""},
+		[1444] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 7.3, ["y"] = 10.7, ["desc"] = ""},
+	},
+	-- Winterspring
+	[1452] = {
+		[1448] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 26.0, ["y"] = 33.9, ["desc"] = ""},
+		[1450] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 26.1, ["y"] = 33.8, ["desc"] = ""},
+	},
+	-- Ashenvale
+	[1440] = {
+		[1413] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 68.6, ["y"] = 89.8, ["desc"] = ""},
+		[1448] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 56.5, ["y"] = 31.5, ["desc"] = ""},
+		[1439] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 28.7, ["y"] = 12.9, ["desc"] = ""},
+	},
+	-- Azshara
+	[1447] = {
+		[1440] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 9.8, ["y"] = 74.2, ["desc"] = ""},
+	},
+	-- The Barrens
+	[1413] = {
+		[1411] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 63.2, ["y"] = 19.1, ["desc"] = ""},
+		[1412] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 41.0, ["y"] = 59.1, ["desc"] = ""},
+	},
 	-- Desolace
 	[1443] = {
-		
+		[1444] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 42.2, ["y"] = 96.8, ["desc"] = ""},
+		[1442] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 53.3, ["y"] = 5.5, ["desc"] = ""},
+	},
+	-- Silithus
+	[1451] = {
+		[1449] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 82.6, ["y"] = 16.6, ["desc"] = ""},
 	},
 	-- Durotar
 	[1411] = {
 		
 	},
-	-- Dustwallow Marsh
-	[1445] = {
+	-- Orgrimmar
+	[1454] = {
+		[1411] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 52.8, ["y"] = 92.9, ["desc"] = ""},
 		
 	},
-	-- Eastern Plaguelands
-	[1423] = {
+	-- Dustwallow Marsh
+	[1445] = {
 		
 	},
 	-- Felwood
@@ -571,92 +693,26 @@ ZoneLinkPoints = {
 	[1444] = {
 		
 	},
-	-- Hillsbrad Foothills
-	[1424] = {
-		
-	},
 	-- Moonglade
 	[1450] =  {
 		
 	},
-	-- Mulgore
-	[1412] = {
-		
-	},
-	-- Orgrimmar
-	[1454] = {
-		
-	},
-	-- Silithus
-	[1451] = {
-		
-	},
-	-- Silverpine Forest
-	[1421] = {
-		
-	},
-	-- Searing Gorge
-	[1427] = {
-		
-	},
-	-- Stonetalon Mountains
-	[1442] = {
-		
-	},
-	-- Westfall
-	[1436] = {
-
-	},
-	-- Duskwood
-	[1431] = {
-		[1434] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 44.7, ["y"] = 84.8, ["desc"] = ""},
-		[1436] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 7.8, ["y"] = 63.9, ["desc"] = ""},
-	},
-	-- Stranglethorn Vale
-	[1434] = {
-		
-	},
-	-- Swamp of Sorrows
-	[1435] = {
-		
-	},
-	-- Tanaris
-	[1446] = {
-		
-	},
-	-- The Barrens
-	[1413] = {
-		
-	},
-	-- The Hinterlands
-	[1425] = {
-		
-	},
-	-- The Undercity
-	[1458] = {
-
-	},
-	-- Thousand Needles
-	[1441] = {
+	-- Darkshore
+	[1439] = {
 
 	},
 	-- Thunder Bluff
 	[1456] = {
 
 	},
-	-- Tirisfal Glades
-	[1420] = {
-
+	-- Mulgore
+	[1412] = {
+		[1456] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 36.9, ["y"] = 32.0, ["desc"] = ""},
 	},
-	-- Winterspring
-	[1452] = {
-
+	-- Stonetalon Mountains
+	[1442] = {
+		[1440] = {["type"] = "ZLP", ["faction"] = "N", ["x"] = 79.8, ["y"] = 40.2, ["desc"] = ""},
 	},
-	-- Un'Goro Crater
-	[1449] = {
-
-	},
-	
 }
 
 
@@ -1657,11 +1713,11 @@ InFlight.defaults = {
 			["Forgotten Coast Boat"] = {
 				["Feathermoon Stronghold Boat"] = 120,
 			},
-			["Deeprun Tram, Stormwind"] = {
-				["Deeprun Tram, Ironforge"] = 120,
+			["Deeprun Tram Stormwind"] = {
+				["Deeprun Tram Ironforge"] = 120,
 			},
-			["Deeprun Tram, Ironforge"] = {
-				["Deeprun Tram, Stormwind"] = 120,
+			["Deeprun Tram Ironforge"] = {
+				["Deeprun Tram Stormwind"] = 120,
 			},
 			["Ratchet Boat"] = {
 				["Booty Bay Boat"] = 120,

@@ -1,5 +1,3 @@
-print(123);
-
 function getWorldMapPosition() 
     local zoneID = C_Map.GetBestMapForUnit("player")
     local mapPosition = C_Map.GetPlayerMapPosition(zoneID, "player")
@@ -237,7 +235,7 @@ function initDistData(mapData, lengths)
                         local timeDistance = math.sqrt(math.pow(dxTime, 2) + math.pow(dyTime, 2))
 
                         if lengths[name1] == nil then lengths[name1] = {} end
-                        lengths[name1][name2] = timeDistance
+                        if lengths[name1][name2] == nil then lengths[name1][name2] = timeDistance end
                     end
                 end
             end
@@ -269,7 +267,6 @@ function getData2(faction)
     data.mapData = mapData
     data.ZLPData = ZoneLinkPoints
     data.lengths = lengths
-    print("getData2")
     
     return data
 end
@@ -277,11 +274,11 @@ end
 function removeNodeFromData(posName, data)
     if data.lengths[posName] ~= nil then
         for k,v in pairs(data.lengths[posName]) do
-            data.lengths[posNam][k] = nil
+            data.lengths[posName][k] = nil
             data.lengths[k][posName] = nil
         end
     end
-
+    
     if data.locData[posName] ~= nil then
         local mapID = data.locData[posName]["mapID"]
         for k,v in pairs(data.mapData[mapID]) do
@@ -295,25 +292,27 @@ end
 
 function setDistData(posName, mapID, mapPos, data)
     removeNodeFromData(posName, data)
-    
+
     local continentID = getContinentMapIDFromMapPos(mapID, mapPos)
     local posX, posY = getMapPosFromWorldPosForMap(continentID, mapID, mapPos)
-    
-    local info = C_Map.GetMapInfoAtPosition(continentID, posX, posY)
+    posX = tonumber(string.format("%.0f", posX))
+    posY = tonumber(string.format("%.0f", posY))
+
+    local info = C_Map.GetMapInfoAtPosition(continentID, posX / 100, posY / 100)
     if info == nil then return end
-
+    
+    data.lengths[posName] = {}
     for _,loc in pairs(data.mapData[info.mapID]) do
-        local x2, y2 = getMapPosFromWorldPosForMap(continentID, mapID, CreateVector2D(loc["x"], loc["y"]))
+        local x2, y2 = getMapPosFromWorldPosForMap(continentID, info.mapID, CreateVector2D(loc["x"], loc["y"]))
         local name = getNameBeforeComma(loc["desc"])
-
-        local dxTime = math.abs(posX - x1) * getYardsPerPixelForMap(mapID) / NORMAL_PLAYER_SPEED
-        local dyTime = math.abs(posY - y1) * getYardsPerPixelForMap(mapID) / NORMAL_PLAYER_SPEED
+        
+        local dxTime = math.abs(posX - x2) * getYardsPerPixelForMap(continentID) / NORMAL_PLAYER_SPEED
+        local dyTime = math.abs(posY - y2) * getYardsPerPixelForMap(continentID) / NORMAL_PLAYER_SPEED
         local timeDistance = math.sqrt(math.pow(dxTime, 2) + math.pow(dyTime, 2))
-
-        lengths[posName][name] = timeDistance
-        lengths[name][posName] = timeDistance
+        
+        data.lengths[posName][name] = timeDistance
+        data.lengths[name][posName] = timeDistance
     end
-
     
     posX, posY = getMapPosFromWorldPosForMap(947, mapID, mapPos)
     data.locData[posName] = {["type"] = "C", ["faction"] = "N", ["mapID"] = info.mapID, ["x"] = posX, ["y"] = posY, ["desc"] = posName}
@@ -449,31 +448,17 @@ end
 
 
 
-function createPathCoordinateTable2(pathList, mapID, playerX, playerY, playerMapID, targetX, targetY, targetMapID, globalMapData, globalMapID)
+function createPathCoordinateTable2(pathList, mapID, globalMapData, globalMapID)
     local coordTable = {}
-    local npx, npy = getMapPosFromWorldPosForMap(mapID, playerMapID, CreateVector2D(playerX, playerY))
-    coordTable["player"] = {}
-    coordTable["player"].x = npx
-    coordTable["player"].y = npy
-    coordTable["player"].prevNode = pathList["player"].prevNode
-    coordTable["player"].nextNode = pathList["player"].nextNode
-    local ntx, nty = getMapPosFromWorldPosForMap(mapID, targetMapID, CreateVector2D(targetX, targetY))
-    coordTable["target"] = {}
-    coordTable["target"].x = ntx
-    coordTable["target"].y = nty
-    coordTable["target"].prevNode = pathList["target"].prevNode
-    coordTable["target"].nextNode = pathList["target"].nextNode
     for k,v in pairs(pathList) do
-        if k ~= "player" and k ~= "target" then
-            coordTable[k] = {}
-            local gPosX = tonumber(globalMapData[k]["x"])
-            local gPosY = tonumber(globalMapData[k]["y"])
-            local posX, posY = getMapPosFromWorldPosForMap(mapID, globalMapID, CreateVector2D(gPosX, gPosY))
-            coordTable[k].x = posX
-            coordTable[k].y = posY
-            coordTable[k].prevNode = v.prevNode
-            coordTable[k].nextNode = v.nextNode
-        end
+        coordTable[k] = {}
+        local gPosX = tonumber(globalMapData[k]["x"])
+        local gPosY = tonumber(globalMapData[k]["y"])
+        local posX, posY = getMapPosFromWorldPosForMap(mapID, globalMapID, CreateVector2D(gPosX, gPosY))
+        coordTable[k].x = posX
+        coordTable[k].y = posY
+        coordTable[k].prevNode = v.prevNode
+        coordTable[k].nextNode = v.nextNode
     end
     return coordTable
 end
@@ -557,32 +542,37 @@ function createPathCoordinateTable(prevList, playerX, playerY, targetX, targetY,
 end
 --]]
 
-local englishFaction, localizedFaction = UnitFactionGroup("player")
-print(englishFaction)
-local mapID, position = getWorldMapPosition()
-local zoneID = C_Map.GetBestMapForUnit("player")
-local playerX, playerY = position:GetXY()
-playerX = playerX * 100
-playerY = playerY * 100
 
-targetX = 47
-targetY = 78
-targetMapID = 1415
+local startFrame = CreateFrame("Frame", "StartFrame") 
+local function eventHandler(self, event)
+    print("Player has entered the world")
+    englishFaction, localizedFaction = UnitFactionGroup("player")
+    print(englishFaction)
+    mapID, position = getWorldMapPosition()
+    zoneID = C_Map.GetBestMapForUnit("player")
+    playerX, playerY = position:GetXY()
+    playerX = playerX * 100
+    playerY = playerY * 100
 
-lengths, mapData = getData(englishFaction, 1414)
-lengths2, mapData2 = getData(englishFaction, 1415)
-local data = getData2(englishFaction)
-setDistData("player", mapID, position, data)
-setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
---setDistanceDataForPosition(playerX, playerY, "player", lengths, mapData2, mapID, true)
---setDistanceDataForPosition(targetX, targetY, "target", lengths2, mapData2, targetMapID, true)
---initBoatZepplinDistanceData(englishFaction, 1414)
---initBoatZepplinDistanceData(englishFaction, 1415)
+    targetX = 40
+    targetY = 77
+    targetMapID = 1415
 
+    data = getData2(englishFaction)
+    setDistData("player", mapID, CreateVector2D(playerX, playerY), data)
+    setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
 
-dist, prev = dijkstrasSSSP(data.lengths, "player")
-printPath(prev, "target")
+    local dist, prev = dijkstrasSSSP(data.lengths, "player")
+    path = createPathList(prev, "target")
+    --printPath(prev, "target")
 
+    if data.lengths[GetBindLocation] ~= nil then
+        oldHS = data.lengths["player"][GetBindLocation()]
+    end
+    HSActive = false
+end
+startFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+startFrame:SetScript("OnEvent", eventHandler)
 
 local lines = {}
 local nodeFrames = {}
@@ -622,31 +612,22 @@ function refreshDrawingData()
     clearDrawingData()
 
     local drawContainer = WorldMapFrame.ScrollContainer
-    print("abcde") 
     local zoneID = drawContainer:GetMap():GetMapID()
     --local parentMapID = C_Map.GetMapInfo(uiMapID).parentMapID
     local mapPosition = C_Map.GetPlayerMapPosition(zoneID, "player")
     local worldMapID, worldMapPosition = getWorldMapPosition()
-    local playerX = nil
-    local playerY = nil
+    playerX = nil
+    playerY = nil
     if worldMapPosition ~= nil then  
         playerX, playerY = worldMapPosition:GetXY()
         playerX = playerX * 100
         playerY = playerY * 100
     end
-    local x, y = drawContainer:GetNormalizedCursorPosition()
-    --[[
-    for k,v in pairs(WorldMapFrame.ScrollContainer) do
-        print(k,v)
-    end
-    --]]
-    --print("LayerIndex", drawContainer:GetCurrentLayerIndex())
-    --print("CursorOnMapPosition", x, y)
+
     local lengths, mapData = getData(englishFaction, zoneID)
     local worldMapLenghts, globalMapData = getData(englishFaction, worldMapID)
 
-    local pathList = createPathList(prev, "target")
-    local coordTable = createPathCoordinateTable2(pathList, zoneID, playerX, playerY, worldMapID, targetX, targetY, targetMapID, globalMapData, worldMapID)
+    local coordTable = createPathCoordinateTable2(path, zoneID, data.locData, 947)
 
     for k, v in pairs(coordTable) do
         local poiInfo = {}
@@ -678,7 +659,6 @@ function refreshDrawingData()
         
         drawContainer:GetMap():AcquirePin("PinMixinTemplate", poiInfo)
     end
-    print(123)
 end
 
 DataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin)
@@ -720,21 +700,25 @@ end
 WorldMapFrame:AddDataProvider(CreateFromMixins(DataProviderMixin))
 
 -- BasicFrameTemplate, BasicFrameTemplateWithInset, UIPanelDialogTemplate, UIDropDownMenuTemplate, MessageFrame, BasicFrameTemplateWithInset
-local frame = CreateFrame("Frame", "MenuFrame", WorldMapFrame, "BasicFrameTemplate") 
-frame:SetSize(300, 360)
+frame = CreateFrame("Frame", "MenuFrame", WorldMapFrame, "BasicFrameTemplate") 
+frame:SetSize(300, 64)
 frame:SetFrameStrata("TOOLTIP")
 --frame:SetMovable(true)
+--frame:SetScript("OnDragStart" frame.StartMoving)
+--frame:SetScript("OnDragStop" frame.StopMovingOrSizing)
 --frame:SetUserPlaced(false)
 --frame:StartMoving()
-frame:SetAlpha(0.9)
+frame:SetAlpha(0.75)
 --print("hello")
 frame:SetPoint("TOPRIGHT", WorldMapFrame.ScrollContainer, "TOPRIGHT")
+frame:Show()
 
 frame.title = frame:CreateFontString(nil, "OVERLAY")
 frame.title:SetFontObject("GameFontHighlight")
 frame.title:SetPoint("LEFT", frame.TitleBg, "LEFT", 5, 0)
 frame.title:SetText("ClassicPathCalculator")
 
+frame.text = frame:CreateFontString(nil, "OVERLAY")
 
 frame.clearBtn = CreateFrame("Button", "ClearBtn", frame, "UIPanelButtonTemplate")
 frame.clearBtn:SetSize(80 ,22) -- width, height
@@ -742,17 +726,64 @@ frame.clearBtn:SetText("Clear Path")
 frame.clearBtn:SetPoint("TOPLEFT", 10, -30)
 frame.clearBtn:SetScript("OnClick", function()
     clearDrawingData()
+    path = {}
+    clearPathText()
 end)
 
+frame.HSCheck = CreateFrame("CheckButton", "HSCheckbutton", frame, "UICheckButtonTemplate");
+frame.HSCheck:SetPoint("LEFT", frame.clearBtn, "RIGHT", 10, 0);
+frame.HSCheck.text = frame.HSCheck:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+frame.HSCheck.text:SetPoint("LEFT", frame.HSCheck, "RIGHT", 0, 0)
+frame.HSCheck.text:SetText("Hearthstone")
+frame.HSCheck.tooltip = "Check for Hearthstone being considered in calculation.";
+frame.HSCheck:HookScript("OnClick", function()
+    if data.lengths[GetBindLocation()] ~= nil then
+        if frame.HSCheck:GetChecked() then
+            HSActive = true
+            oldHS = data.lengths["player"][GetBindLocation()]
+            data.lengths["player"][GetBindLocation()] = 15
+        else
+            HDActive = false
+            data.lengths["player"][GetBindLocation()] = oldHS
+        end
+        calculateAndShowPath()
+    end
+end)
+
+frame.speedSlider = CreateFrame("Slider", "SpeedSlider", frame, "OptionsSliderTemplate")
+frame.speedSlider:SetPoint("LEFT", frame.HSCheck, "RIGHT", 75, 0)
+frame.speedSlider:SetWidth(75)
+frame.speedSlider:SetHeight(20)
+frame.speedSlider:SetOrientation('HORIZONTAL')
+frame.speedSlider:SetMinMaxValues(1, 100)
+frame.speedSlider:SetValueStep(1)
+frame.speedSlider:SetValue(10)
+frame.speedSlider:SetObeyStepOnDrag(true)
+frame.speedSlider:Enable()
+frame.speedSlider.tooltipText = 'Set The running movement speed (mount = 60% and epic mount = 100%)' --Creates a tooltip on mouseover.
+getglobal(frame.speedSlider:GetName() .. 'Low'):SetText('1'); --Sets the left-side slider text (default is "Low").
+getglobal(frame.speedSlider:GetName() .. 'High'):SetText('100'); --Sets the right-side slider text (default is "High").
+getglobal(frame.speedSlider:GetName() .. 'Text'):SetText('Movement Speed'); --Sets the "title" text (top-centre of slider).
 
 
-frame.text = frame:CreateFontString(nil, "OVERLAY")
 frame.text:SetFontObject("GameFontHighlight")
-frame.text:SetText("This is new text \n This is a new line \n Hope it works like intended")
+frame.text:SetText("Alt + Click to set target destination.")
 frame.text:SetPoint("TOPLEFT", frame.clearBtn, "TOPLEFT", 30, -30)
 frame.text:SetJustifyH("LEFT")
 frame.text:SetSpacing(32)
 
+local CPCBtn = CreateFrame("Button", "CPCButton", WorldMapFrame, "UIPanelButtonTemplate") 
+CPCBtn:SetSize(150 ,22) -- width, height
+CPCBtn:SetText("ClassicPathCalculator")
+CPCBtn:SetPoint("LEFT", WorldMapZoomOutButton, "RIGHT", 30, 0)
+CPCBtn:Show()
+CPCBtn:SetScript("OnClick", function()
+    if frame:IsShown() == true then
+        frame:Hide()
+    else
+        frame:Show()
+    end
+end)
 --[[
 frame.tex = frame:CreateTexture()
 frame.tex:SetPoint("CENTER")
@@ -774,9 +805,9 @@ function secondsToMins(seconds)
     if seconds <= 0 then
         return "0"
     else
-        hours = string.format("%02.f", math.floor(seconds/3600))
-        mins = string.format("%02.f", math.floor(seconds/60 - (hours*60)))
-        secs = string.format("%02.f", math.floor(seconds - hours*3600 - mins *60))
+        local hours = string.format("%02.f", math.floor(seconds/3600))
+        local mins = string.format("%02.f", math.floor(seconds/60 - (hours*60)))
+        local secs = string.format("%02.f", math.floor(seconds - hours*3600 - mins *60))
         if math.floor(seconds/60 - (hours*60)) > 0 then
             return mins .. " mins, " .. secs .. " secs"
         else
@@ -814,10 +845,17 @@ function getTotalPathTime(orderedPath)
 end
 
 local modeIcons = {}
-function writePathText(orderedPath, mapData)
+function clearPathText()
     for k,v in pairs(modeIcons) do
         v:SetTexture(nil)
     end
+    frame.text:SetText("Alt + Click to set target destination.")
+    frame:SetHeight(frame.text:GetHeight() + 64)
+    frame.clearBtn:Hide()
+end
+
+function writePathText(orderedPath, mapData)
+    clearPathText()
 
     local size = 1
     for k,v in pairs(orderedPath) do
@@ -836,38 +874,78 @@ function writePathText(orderedPath, mapData)
         modeIcons[i]:SetTexture(ModeIconsFilepath[getEdgeType(orderedPath[size - i].node, orderedPath[size - i].nextNode, mapData)])
         i = i + 1
     end
+
+    frame.clearBtn:Show()
     frame.text:SetText(textString)
     frame.text:SetJustifyH("LEFT")
     frame.text:SetSpacing(8)
     frame:SetHeight(frame.text:GetHeight() + 32)
 end
 
+function calculateAndShowPath()
+    local dist, prev = dijkstrasSSSP(data.lengths, "player")
+    local orderedPath = createPathOrderedList(dist, prev, "target")
+    path = createPathList(prev, "target")
+    
+    writePathText(orderedPath, data.locData)
+    refreshDrawingData()
+    frame:Show()
+end
 
 WorldMapFrame.ScrollContainer:HookScript("OnMouseUp", function(self)
     if IsLeftAltKeyDown() or IsRightAltKeyDown() then
         targetX, targetY = self:GetNormalizedCursorPosition()
         targetX = targetX * 100
         targetY = targetY * 100
+        
         local currentMapID = self:GetMap():GetMapID()
         local continentID = getContinentMapIDFromMapPos(currentMapID, CreateVector2D(targetX, targetY))
         targetMapID = continentID
         targetX, targetY = getMapPosFromWorldPosForMap(targetMapID, currentMapID, CreateVector2D(targetX, targetY))
-        if continentID == 1414 then
-            setDistanceDataForPosition(targetX, targetY, "target", lengths, mapData, targetMapID, true)
-        else
-            setDistanceDataForPosition(targetX, targetY, "target", lengths, mapData2, targetMapID, true)
-        end
-        dist, prev = dijkstrasSSSP(lengths, "player")
-        local path = createPathOrderedList(dist, prev, "target")
-        writePathText(path, mapData)
-        refreshDrawingData()
-        frame:Show()
+        setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
+        setDistData("player", mapID, CreateVector2D(playerX, playerY), data)
+
+        calculateAndShowPath()
     end
 end)
 
+--[[
+function updatePath()
+    currentEdge = getEdgeType(orderedPath[1], orderedPath[2], data.locData)
+    nextEdge = getEdgeType(orderedPath[2], orderedPath[3], data.locData)
 
+    if currentEdge == "Walking" then
+        if dist[orderedPath[2]] - dist[orderedPath[1]] <= 10 then
 
+        else
+            calculateAndShowPath()
+        end
+    end
+end
+--]]
+--[[
+local frame = CreateFrame("Frame")
+-- The minimum number of seconds between each update
+local ONUPDATE_INTERVAL = 0.1
+-- The number of seconds since the last update
+local TimeSinceLastUpdate = 0
+frame:SetScript("OnUpdate", function(self, elapsed)
+	TimeSinceLastUpdate = TimeSinceLastUpdate + elapsed
+	if TimeSinceLastUpdate >= ONUPDATE_INTERVAL then
+		TimeSinceLastUpdate = 0
+		
+		-- Do stuff
+	end
+end)
+-- When the frame is shown, reset the update timer
+frame:SetScript("OnShow", function(self)
+	TimeSinceLastUpdate = 0
+end)
+--[[
 print("ending")
+local info = C_Map.GetMapInfoAtPosition(1415, 0.47, 0.29)
+print(info.mapID, info.name)
+--]]
 --[[
 print("yoyo")
 local info = C_Map.GetMapInfoAtPosition(1414, 0.44, 0.66)
@@ -925,9 +1003,10 @@ for k,v in pairs(testArray) do
     print(k, v["type"], v["faction"], v["x"], v["y"], v["desc"])
 end
 --]]
-
+--[[
 emptyList = {}
 table.insert(emptyList, 123)
 for k,v in pairs(emptyList) do
     print(k,v)
 end
+--]]
