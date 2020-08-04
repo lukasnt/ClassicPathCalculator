@@ -1,3 +1,5 @@
+--print("123")
+
 function getWorldMapPosition() 
     local zoneID = C_Map.GetBestMapForUnit("player")
     local mapPosition = C_Map.GetPlayerMapPosition(zoneID, "player")
@@ -545,9 +547,9 @@ end
 
 local startFrame = CreateFrame("Frame", "StartFrame") 
 local function eventHandler(self, event)
-    print("Player has entered the world")
+    --print("Player has entered the world")
     englishFaction, localizedFaction = UnitFactionGroup("player")
-    print(englishFaction)
+    --print(englishFaction)
     mapID, position = getWorldMapPosition()
     zoneID = C_Map.GetBestMapForUnit("player")
     playerX, playerY = position:GetXY()
@@ -558,12 +560,13 @@ local function eventHandler(self, event)
     targetY = 77
     targetMapID = 1415
 
+    
     data = getData2(englishFaction)
     setDistData("player", mapID, CreateVector2D(playerX, playerY), data)
     setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
 
     local dist, prev = dijkstrasSSSP(data.lengths, "player")
-    path = createPathList(prev, "target")
+    path = {}
     --printPath(prev, "target")
 
     if data.lengths[GetBindLocation] ~= nil then
@@ -750,6 +753,7 @@ frame.HSCheck:HookScript("OnClick", function()
     end
 end)
 
+--[[
 frame.speedSlider = CreateFrame("Slider", "SpeedSlider", frame, "OptionsSliderTemplate")
 frame.speedSlider:SetPoint("LEFT", frame.HSCheck, "RIGHT", 75, 0)
 frame.speedSlider:SetWidth(75)
@@ -764,7 +768,7 @@ frame.speedSlider.tooltipText = 'Set The running movement speed (mount = 60% and
 getglobal(frame.speedSlider:GetName() .. 'Low'):SetText('1'); --Sets the left-side slider text (default is "Low").
 getglobal(frame.speedSlider:GetName() .. 'High'):SetText('100'); --Sets the right-side slider text (default is "High").
 getglobal(frame.speedSlider:GetName() .. 'Text'):SetText('Movement Speed'); --Sets the "title" text (top-centre of slider).
-
+--]]
 
 frame.text:SetFontObject("GameFontHighlight")
 frame.text:SetText("Alt + Click to set target destination.")
@@ -879,7 +883,7 @@ function writePathText(orderedPath, mapData)
     frame.text:SetText(textString)
     frame.text:SetJustifyH("LEFT")
     frame.text:SetSpacing(8)
-    frame:SetHeight(frame.text:GetHeight() + 32)
+    frame:SetHeight(frame.text:GetHeight() + 64)
 end
 
 function calculateAndShowPath()
@@ -909,20 +913,7 @@ WorldMapFrame.ScrollContainer:HookScript("OnMouseUp", function(self)
     end
 end)
 
---[[
-function updatePath()
-    currentEdge = getEdgeType(orderedPath[1], orderedPath[2], data.locData)
-    nextEdge = getEdgeType(orderedPath[2], orderedPath[3], data.locData)
 
-    if currentEdge == "Walking" then
-        if dist[orderedPath[2]] - dist[orderedPath[1]] <= 10 then
-
-        else
-            calculateAndShowPath()
-        end
-    end
-end
---]]
 --[[
 local frame = CreateFrame("Frame")
 -- The minimum number of seconds between each update
@@ -941,11 +932,14 @@ end)
 frame:SetScript("OnShow", function(self)
 	TimeSinceLastUpdate = 0
 end)
+--]]
+
 --[[
 print("ending")
 local info = C_Map.GetMapInfoAtPosition(1415, 0.47, 0.29)
 print(info.mapID, info.name)
 --]]
+
 --[[
 print("yoyo")
 local info = C_Map.GetMapInfoAtPosition(1414, 0.44, 0.66)
@@ -1003,6 +997,7 @@ for k,v in pairs(testArray) do
     print(k, v["type"], v["faction"], v["x"], v["y"], v["desc"])
 end
 --]]
+
 --[[
 emptyList = {}
 table.insert(emptyList, 123)
