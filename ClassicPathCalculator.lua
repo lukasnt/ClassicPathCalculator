@@ -567,6 +567,7 @@ local function eventHandler(self, event)
 
     local dist, prev = dijkstrasSSSP(data.lengths, "player")
     path = {}
+    clear = true
     --printPath(prev, "target")
 
     if data.lengths[GetBindLocation] ~= nil then
@@ -611,6 +612,18 @@ function clearDrawingData()
     nodeFrames = {}
 end
 
+function updatePath()
+    mapID, position = getWorldMapPosition()
+    zoneID = C_Map.GetBestMapForUnit("player")
+    playerX, playerY = position:GetXY()
+    playerX = playerX * 100
+    playerY = playerY * 100
+
+    setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
+    setDistData("player", mapID, CreateVector2D(playerX, playerY), data)
+    calculateAndShowPath(false)
+end
+
 function refreshDrawingData()
     clearDrawingData()
 
@@ -639,6 +652,17 @@ function refreshDrawingData()
         poiInfo.drawLines = false
         poiInfo.drawPoints = true
         
+        if v.nextNode ~= nil and coordTable[v.nextNode] then
+            poiInfo.nextX = (coordTable[v.nextNode].x - v.x) / 100 * drawContainer:GetMap():GetWidth() * 0.95
+            poiInfo.nextY = -(coordTable[v.nextNode].y - v.y) / 100 * drawContainer:GetMap():GetHeight() * 0.85
+            poiInfo.nextNode = v.nextNode
+        else
+            poiInfo.nextNode = nil
+            poiInfo.nextX = 0
+            poiInfo.nextY = 0
+        end
+        
+
         drawContainer:GetMap():AcquirePin("PinMixinTemplate", poiInfo)
     end
 
@@ -666,7 +690,11 @@ end
 
 DataProviderMixin = CreateFromMixins(MapCanvasDataProviderMixin)
 function DataProviderMixin:RefreshAllData(fromOnShow)
-    refreshDrawingData()
+    if clear == false and UnitOnTaxi("player") == false then
+        updatePath()
+    else
+        refreshDrawingData()
+    end
 end
 
 PinMixin = BaseMapPoiPinMixin:CreateSubPin("PIN_FRAME_LEVEL_FLIGHT_POINT");
@@ -674,6 +702,7 @@ function PinMixin:SetTexture(poiInfo)
     if poiInfo.drawPoints == true then
         nodeFrames[poiInfo.name] = self
         self:CreateTexture()
+        self.Texture:SetTexture(ModeIconsFilepath[getEdgeType(poiInfo.name, poiInfo.nextNode, data.locData)])
     end
 
     if poiInfo.drawLines == true then
@@ -730,6 +759,7 @@ frame.clearBtn:SetPoint("TOPLEFT", 10, -30)
 frame.clearBtn:SetScript("OnClick", function()
     clearDrawingData()
     path = {}
+    clear = true
     clearPathText()
 end)
 
@@ -749,7 +779,7 @@ frame.HSCheck:HookScript("OnClick", function()
             HDActive = false
             data.lengths["player"][GetBindLocation()] = oldHS
         end
-        calculateAndShowPath()
+        calculateAndShowPath(true)
     end
 end)
 
@@ -879,6 +909,7 @@ function writePathText(orderedPath, mapData)
         i = i + 1
     end
 
+    
     frame.clearBtn:Show()
     frame.text:SetText(textString)
     frame.text:SetJustifyH("LEFT")
@@ -886,14 +917,17 @@ function writePathText(orderedPath, mapData)
     frame:SetHeight(frame.text:GetHeight() + 64)
 end
 
-function calculateAndShowPath()
+function calculateAndShowPath(showFrame)
     local dist, prev = dijkstrasSSSP(data.lengths, "player")
     local orderedPath = createPathOrderedList(dist, prev, "target")
     path = createPathList(prev, "target")
+    clear = false
     
     writePathText(orderedPath, data.locData)
     refreshDrawingData()
-    frame:Show()
+    if showFrame == true then
+        frame:Show()
+    end
 end
 
 WorldMapFrame.ScrollContainer:HookScript("OnMouseUp", function(self)
@@ -909,22 +943,24 @@ WorldMapFrame.ScrollContainer:HookScript("OnMouseUp", function(self)
         setDistData("target", targetMapID, CreateVector2D(targetX, targetY), data)
         setDistData("player", mapID, CreateVector2D(playerX, playerY), data)
 
-        calculateAndShowPath()
+        calculateAndShowPath(true)
     end
 end)
 
 
---[[
+
 local frame = CreateFrame("Frame")
 -- The minimum number of seconds between each update
-local ONUPDATE_INTERVAL = 0.1
+local ONUPDATE_INTERVAL = 0.5
 -- The number of seconds since the last update
 local TimeSinceLastUpdate = 0
 frame:SetScript("OnUpdate", function(self, elapsed)
-	TimeSinceLastUpdate = TimeSinceLastUpdate + elapsed
-	if TimeSinceLastUpdate >= ONUPDATE_INTERVAL then
+    TimeSinceLastUpdate = TimeSinceLastUpdate + elapsed
+    if TimeSinceLastUpdate >= ONUPDATE_INTERVAL then
+        if clear == false and UnitOnTaxi("player") == false then
+            updatePath()
+        end
 		TimeSinceLastUpdate = 0
-		
 		-- Do stuff
 	end
 end)
@@ -932,7 +968,6 @@ end)
 frame:SetScript("OnShow", function(self)
 	TimeSinceLastUpdate = 0
 end)
---]]
 
 --[[
 print("ending")
